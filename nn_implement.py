@@ -23,12 +23,18 @@ def reLU_derivative(x):
 # change default figure size
 matplotlib.rcParams['figure.figsize'] = (10.0, 8.0)
 
-X_, y = sklearn.datasets.make_moons(200, noise=0.20)
+X_0, y_ = sklearn.datasets.make_moons(200, noise=0.20)
 
 # normalize data to mean 0 and std 1
-mean = np.mean(X_,axis=0)
-std = np.std(X_,axis=0)
-X = (X_-mean)/std
+mean = np.mean(X_0,axis=0)
+std = np.std(X_0,axis=0)
+X_ = (X_0-mean)/std
+
+# X_,y_ is the standardized data, use X_[0:140,:] as training set and X_[140:,:] as validation set
+
+X = X_[0:140,:]
+y = y_[0:140]
+
 
 plt.scatter(X[:,0], X[:,1], s=40, c=y, cmap=plt.cm.Spectral)
 
@@ -67,7 +73,7 @@ class neural_network:
             self.W.append(weight)
             self.b.append(bias)
 
-    def fit(self, X_, y_, learning_rate=0.2, batch_size=10):
+    def fit(self, X_, y_, learning_rate=0.2, batch_size=100):
         num_examples = X_.shape[0]
 
         # find a batch
@@ -180,9 +186,10 @@ for i in range(100000):
         print("cost after "+str(i)+" iterations: "+str(nn.compute_cost(X,y)))
     nn.fit(X, y)
 toc = time.time()
-print("training time："+str((toc-tic))+" s")
+print("training time："+str((toc-tic))+" seconds")
 print("Optimized cost: "+str(nn.compute_cost(X,y)))
 print("accuracy on training set: "+str(nn.compute_accuracy(X,y)))
+print("accuracy on validation set: "+str(nn.compute_accuracy(X_[140:,:],y_[140:])))
 
 plot_decision_boundary(lambda x: nn.predict(x))
 plt.show()
